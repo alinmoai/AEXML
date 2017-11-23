@@ -59,10 +59,17 @@ open class AEXMLElement {
     
     // MARK: - XML Read
     
+    private func removeNamespace(key:String) -> String{
+        if(key.components(separatedBy: ":").count > 1) {
+            return key.components(separatedBy: ":")[1]
+        }
+        return key
+    }
+    
     /// The first element with given name **(Empty element with error if not exists)**.
     open subscript(key: String) -> AEXMLElement {
         guard let
-            first = children.first(where: { $0.name == key })
+            first = children.filter({removeNamespace(key: $0.name) == key || $0.name == key}).first
         else {
             let errorElement = AEXMLElement(name: key)
             errorElement.error = AEXMLError.elementNotFound
